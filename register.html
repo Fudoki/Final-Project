@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Account Registration</title>
+  <link rel="stylesheet" type="text/css" href="registerstyle.css">
+</head>
+
+<body>
+  <div class="wrapper">
+    <span class="icon-close">
+      <ion-icon name="close-outline"></ion-icon>
+    </span>
+
+    <div class="form-box register">
+      <h2>Register</h2>
+      <form id="registrationForm">
+        <div class="input-box">
+          <span class="icon">
+            <ion-icon name="mail"></ion-icon>
+          </span>
+          <input type="text" id="username" required>
+          <label>Username</label>
+        </div>
+        <div class="input-box">
+          <span class="icon">
+            <ion-icon name="lock-closed"></ion-icon>
+          </span>
+          <input type="password" id="userpassword" required>
+          <label>Password</label>
+        </div>
+        <div class="input-box">
+          <span class="icon">
+            <ion-icon name="lock-closed"></ion-icon>
+          </span>
+          <input type="password" id="confirmUserPassword" required>
+          <label>Confirm Password</label>
+        </div>
+        <div class="remember-forgot">
+          <p><input type="checkbox" onclick="togglePasswordVisibility()"> Show Password</p>
+          <a href="index.html"> 
+          <br> <br>
+          Already have an account?</a> </input></p>
+        </div>
+        <br>
+        <button type="submit" class="btn">Register</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function togglePasswordVisibility() {
+      var passwordInput = document.getElementById("userpassword");
+      var confirmPasswordInput = document.getElementById("confirmUserPassword");
+      var passwordVisibilityButton = document.getElementsByTagName("input")[0];
+      if (passwordInput.type === "password" || confirmPasswordInput.type === "password") {
+        passwordInput.type = "text";
+        confirmPasswordInput.type = "text";
+        passwordVisibilityButton.checked = true;
+      } else {
+        passwordInput.type = "password";
+        confirmPasswordInput.type = "password";
+        passwordVisibilityButton.checked = false;
+      }
+    }
+
+  document.getElementById('registrationForm').addEventListener('submit',         
+    function (event) {
+      event.preventDefault(); // Prevent form submission
+
+      // Get input values
+      var username = document.getElementById('username').value;
+      var password = document.getElementById('userpassword').value;
+      var confirmPassword = document.getElementById('confirmUserPassword').value;
+
+      // Perform validation
+      if (username && password && confirmPassword) {
+        if (password === confirmPassword) {
+          // Create user object
+          var user = {
+            username: username,
+            password: password
+          };
+
+          // Check if local storage already has registered users
+          var registeredUsers = localStorage.getItem('registeredUsers');
+          if (registeredUsers) {
+            registeredUsers = JSON.parse(registeredUsers); // Parse existing data
+            registeredUsers.push(user); // Add new user to array
+            localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers)); // Update local storage
+          } else {
+            localStorage.setItem('registeredUsers', JSON.stringify([user])); // Create new array with user
+          }
+
+          // Save the currently registered user for logging in
+          localStorage.setItem('currentUser', JSON.stringify(user));
+
+          alert('Registration successful!');
+          document.getElementById('registrationForm').reset(); // Reset the form
+        } else {
+          alert('Passwords do not match. Please confirm your password correctly.');
+        }
+      } else {
+        alert('Please fill in all the required fields.');
+      }
+    });
+
+
+
+
+
+
+
+    
+  </script>
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</body>
+
+</html>

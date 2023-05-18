@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="adminstyle.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body>
+  <div class="sidebar">
+    <div class="logo">
+      <a href="#" class="logo"><i class="fas fa-tooth"></i> pncCare. </a>
+    </div>
+    <ul>
+      <li><a href="#" id="appointmentsLink">Appointments</a></li>
+      <li><a href="#" id="dentistsLink">Dentists</a></li>
+      <li><a href="index.html" id="adminLogout">Logout</a></li>
+
+    </ul>
+  </div>
+ <div class="content" id="appointmentsContent">
+  <h2>Appointment</h2><br>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Contact Number</th>
+        <th>Email</th>
+        <th>Dentist</th>
+      </tr>
+    </thead>
+    <tbody id="appointmentTableBody">
+      <!-- Appointments will be dynamically added here -->
+    </tbody>
+  </table>
+</div>
+
+  <div class="content" id="dentistsContent">
+    <h2>Dentists</h2>
+    <br>
+    <div class="navbar">
+      <button id="add-doctor-btn">Add Doctor</button>
+      <button id="remove-doctor-btn">Remove Doctor</button>
+    </div>
+    <br>
+
+    <div id="doctor-form-container" style="display: none;">
+      <div class="form-container">
+        <form id="add-doctor-form">
+          <div class="form-field">
+            <label for="name">Name:</label>
+            <input type="text" id="name" required>
+          </div>
+          <div class="form-field">
+            <label for="contact">Contact No.:</label>
+            <input type="text" id="contact" required>
+          </div>
+          <div class="form-field">
+            <label for="speciality">Speciality:</label>
+            <input type="text" id="speciality" required>
+          </div>
+          <button type="submit" id="submit-doctor-btn">Add</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="remove-doctor-container" style="display: none;">
+      <div id="remove-doctor-div">
+        <form id="remove-doctor-form">
+          <div class="form-field">
+            <label for="remove-doctor-id">Doctor ID:</label>
+            <input type="text" id="remove-doctor-id" required>
+          </div>
+          <button type="submit">Remove</button>
+        </form>
+      </div>
+    </div>
+
+    <table id="doctors-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Contact No.</th>
+          <th>Speciality</th>
+        </tr>
+      </thead>
+      <tbody id="doctors-table-body">
+        <!-- Table rows will be dynamically added here -->
+      </tbody>
+    </table>
+  </div>
+
+
+  <script>
+    // Hide all content sections except for the "Appointments" section
+    document.getElementById("dentistsContent").style.display = "none";
+
+    // Show the "Appointments" section by default
+    document.getElementById("appointmentsContent").style.display = "block";
+
+    // Add event listeners to the navbar links
+    document.getElementById("appointmentsLink").addEventListener("click", function () {
+      showContent("appointmentsContent");
+    });
+
+    document.getElementById("dentistsLink").addEventListener("click", function () {
+      showContent("dentistsContent");
+    });
+
+    function showContent(contentId) {
+      // Hide all content sections
+      var contentSections = document.getElementsByClassName("content");
+      for (var i = 0; i < contentSections.length; i++) {
+        contentSections[i].style.display = "none";
+      }
+
+      // Show the selected content section
+      document.getElementById(contentId).style.display = "block";
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const addDoctorBtn = document.getElementById('add-doctor-btn');
+      const removeDoctorBtn = document.getElementById('remove-doctor-btn');
+      const doctorFormContainer = document.getElementById('doctor-form-container');
+      const removeDoctorContainer = document.getElementById('remove-doctor-container');
+      const removeDoctorIdInput = document.getElementById('remove-doctor-id');
+      const removeDoctorForm = document.getElementById('remove-doctor-form');
+      const addDoctorForm = document.getElementById('add-doctor-form');
+      const doctorsTableBody = document.getElementById('doctors-table-body');
+
+      let doctorCount = 1;
+
+      function updateTableRowIds() {
+        const tableRows = doctorsTableBody.querySelectorAll('tr');
+        tableRows.forEach((row, index) => {
+          const doctorId = index + 1;
+          row.setAttribute('id', `doctor-${doctorId}`);
+          row.querySelector('td:first-child').textContent = doctorId;
+        });
+
+        // Store the updated data in local storage
+        const tableData = Array.from(tableRows).map(row => {
+          return {
+            id: row.querySelector('td:first-child').textContent,
+            name: row.querySelector('td:nth-child(2)').textContent,
+            contact: row.querySelector('td:nth-child(3)').textContent,
+            speciality: row.querySelector('td:nth-child(4)').textContent
+          };
+        });
+        localStorage.setItem('doctorsData', JSON.stringify(tableData));
+      }
+
+      addDoctorBtn.addEventListener('click', () => {
+        doctorFormContainer.style.display = 'block';
+        removeDoctorContainer.style.display = 'none';
+      });
+
+      removeDoctorBtn.addEventListener('click', () => {
+        removeDoctorContainer.style.display = 'block';
+        doctorFormContainer.style.display = 'none';
+      });
+
+      removeDoctorForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const removeDoctorId = removeDoctorIdInput.value;
+        const tableRow = document.getElementById(`doctor-${removeDoctorId}`);
+        if (tableRow) {
+          tableRow.remove();
+          updateTableRowIds();
+        }
+        removeDoctorIdInput.value = '';
+        removeDoctorContainer.style.display = 'none';
+      });
+
+      addDoctorForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const name = document.getElementById('name').value;
+        const contact = document.getElementById('contact').value;
+        const speciality = document.getElementById('speciality').value;
+
+        const newRow = document.createElement('tr');
+        newRow.setAttribute('id', `doctor-${doctorCount}`);
+
+        const idCell = document.createElement('td');
+        idCell.textContent = doctorCount;
+
+        const nameCell = document.createElement('td');
+        nameCell.textContent = name;
+
+        const contactCell = document.createElement('td');
+        contactCell.textContent = contact;
+
+        const specialityCell = document.createElement('td');
+        specialityCell.textContent = speciality;
+
+        newRow.appendChild(idCell);
+        newRow.appendChild(nameCell);
+        newRow.appendChild(contactCell);
+        newRow.appendChild(specialityCell);
+
+        doctorsTableBody.appendChild(newRow);
+        doctorCount++;
+
+        updateTableRowIds();
+
+        doctorFormContainer.style.display = 'none';
+        addDoctorForm.reset();
+      });
+
+      // Retrieve data from local storage on page load
+      const storedData = localStorage.getItem('doctorsData');
+      if (storedData) {
+        const tableData = JSON.parse(storedData);
+        tableData.forEach(data => {
+          const newRow = document.createElement('tr');
+          newRow.setAttribute('id', `doctor-${data.id}`);
+
+          const idCell = document.createElement('td');
+          idCell.textContent = data.id;
+
+          const nameCell = document.createElement('td');
+          nameCell.textContent = data.name;
+
+          const contactCell = document.createElement('td');
+          contactCell.textContent = data.contact;
+
+          const specialityCell = document.createElement('td');
+          specialityCell.textContent = data.speciality;
+
+          newRow.appendChild(idCell);
+          newRow.appendChild(nameCell);
+          newRow.appendChild(contactCell);
+          newRow.appendChild(specialityCell);
+
+          doctorsTableBody.appendChild(newRow);
+          doctorCount++;
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>
