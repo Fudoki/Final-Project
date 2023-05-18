@@ -36,20 +36,6 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
   }
 });
 
-// User account Interface
-let menu = document.querySelector('#menu-btn');
-let navbar = document.querySelector('.navbar');
-
-menu.onclick = () => {
-  menu.classList.toggle('fa-times');
-  navbar.classList.toggle('active');
-}
-
-window.onscroll = () => {
-  menu.classList.toggle('fa-times');
-  navbar.classList.toggle('active');
-}
-
 function logOut() {
   window.location.assign("index.html")
   alert('You logged out successfully..');
